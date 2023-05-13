@@ -67,10 +67,15 @@ async def start(client, message):
         btn = [
             [
                 InlineKeyboardButton(
+                    "🔥 Join YouTube Channel", url='https://youtube.com/@InvisibleYTV'
+                )
+            ],[
+                InlineKeyboardButton(
                     "🤖 Join Updates Channel", url=invite_link.invite_link
                 )
             ]
         ]
+        
 
         if message.command[1] != "subscribe":
             try:
