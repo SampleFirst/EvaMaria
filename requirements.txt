@@ -1,4 +1,3 @@
-git+https://github.com/MrMKN/pyrogram  
 git+https://github.com/cinemagoer/cinemagoer
 pyrogram==2.0.106
 tgcrypto
