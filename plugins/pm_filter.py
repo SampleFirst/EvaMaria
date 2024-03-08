@@ -14,7 +14,7 @@ from database.filters_mdb import del_all, find_filter, get_filters
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.users_chats_db import db
 
-from info import ADMINS, AUTH_CHANNEL, AUTH_GROUPS, CUSTOM_FILE_CAPTION, IMDB, IMDB_TEMPLATE, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY
+from info import ADMINS, UPDATE_CHANNEL, AUTH_CHANNEL, AUTH_GROUPS, CUSTOM_FILE_CAPTION, IMDB, IMDB_TEMPLATE, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY
 from Script import script
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings
 
