@@ -128,15 +128,15 @@ async def who_is(client, message):
         )
     await status_message.delete()
 
-@Client.on_message(filters.command('imdb'))
+@Client.on_message(filters.command("imdb"))
 async def imdb_search(client, message):
     if ' ' in message.text:
-        msg = await message.reply('Searching IMDb')
-        r, title = message.text.split(None, 1)
+        search_msg = await message.reply('Searching IMDb...')
+        command, title = message.text.split(None, 1)
         movies = await get_poster(title, bulk=True)
         if not movies:
             return await message.reply("No results found")
-        btn = [
+        buttons = [
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} - {movie.get('year')}",
@@ -145,68 +145,70 @@ async def imdb_search(client, message):
             ]
             for movie in movies
         ]
-        await msg.edit('Here is what I found on IMDb', reply_markup=InlineKeyboardMarkup(btn))
+        await search_msg.edit('Here is what I found on IMDb', reply_markup=InlineKeyboardMarkup(buttons))
     else:
-        await message.reply('Give me a movie/series name')
+        await message.reply('Give me a movie or series name')
 
 @Client.on_callback_query(filters.regex('^imdb'))
 async def imdb_callback(bot: Client, query: CallbackQuery):
-    i, movie = query.data.split('#')
-    imdb = await get_poster(text=movie, id=True)
-    btn = [
+    _, movie_id = query.data.split('#')
+    imdb_info = await get_poster(query=movie_id, id=True)
+    buttons = [
         [
             InlineKeyboardButton(
-                text=f"{imdb.get('title')}",
-                url=imdb['url'],
+                text=f"{imdb_info.get('title')}",
+                url=imdb_info['url'],
             )
         ]
     ]
     message = query.message.reply_to_message or query.message
-    if imdb:
+    if imdb_info:
         caption = IMDB_TEMPLATE.format(
-            text=imdb['title'],
-            title=imdb['title'],
-            votes=imdb['votes'],
-            aka=imdb["aka"],
-            seasons=imdb["seasons"],
-            box_office=imdb['box_office'],
-            localized_title=imdb['localized_title'],
-            kind=imdb['kind'],
-            imdb_id=imdb["imdb_id"],
-            cast=imdb["cast"],
-            runtime=imdb["runtime"],
-            countries=imdb["countries"],
-            certificates=imdb["certificates"],
-            languages=imdb["languages"],
-            director=imdb["director"],
-            writer=imdb["writer"],
-            producer=imdb["producer"],
-            composer=imdb["composer"],
-            cinematographer=imdb["cinematographer"],
-            music_team=imdb["music_team"],
-            distributors=imdb["distributors"],
-            release_date=imdb['release_date'],
-            year=imdb['year'],
-            genres=imdb['genres'],
-            poster=imdb['poster'],
-            plot=imdb['plot'],
-            rating=imdb['rating'],
-            url=imdb['url'],
+            query=imdb_info['title'],
+            title=imdb_info['title'],
+            votes=imdb_info['votes'],
+            aka=imdb_info["aka"],
+            seasons=imdb_info["seasons"],
+            box_office=imdb_info['box_office'],
+            localized_title=imdb_info['localized_title'],
+            kind=imdb_info['kind'],
+            imdb_id=imdb_info["imdb_id"],
+            cast=imdb_info["cast"],
+            runtime=imdb_info["runtime"],
+            countries=imdb_info["countries"],
+            certificates=imdb_info["certificates"],
+            languages=imdb_info["languages"],
+            director=imdb_info["director"],
+            writer=imdb_info["writer"],
+            producer=imdb_info["producer"],
+            composer=imdb_info["composer"],
+            cinematographer=imdb_info["cinematographer"],
+            music_team=imdb_info["music_team"],
+            distributors=imdb_info["distributors"],
+            release_date=imdb_info['release_date'],
+            year=imdb_info['year'],
+            genres=imdb_info['genres'],
+            poster=imdb_info['poster'],
+            plot=imdb_info['plot'],
+            rating=imdb_info['rating'],
+            url=imdb_info['url'],
             **locals()
         )
     else:
-        caption = "No Results"
-    if imdb.get('poster'):
-        try:
-            await query.message.reply_photo(photo=imdb['poster'], caption=caption, reply_markup=InlineKeyboardMarkup(btn))
-        except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-            pic = imdb.get('poster')
-            poster = pic.replace('.jpg', "._V1_UX360.jpg")
-            await query.message.reply_photo(photo=poster, caption=caption, reply_markup=InlineKeyboardMarkup(btn))
-        except Exception as e:
-            logger.exception(e)
-            await query.message.reply(caption, reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=False)
-        await query.message.delete()
-    else:
-        await query.message.edit(caption, reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=False)
+        caption = "No results"
+    try:
+        if imdb_info.get('poster'):
+            await query.message.reply_photo(photo=imdb_info['poster'], caption=caption, reply_markup=InlineKeyboardMarkup(buttons))
+        else:
+            await query.message.edit(caption, reply_markup=InlineKeyboardMarkup(buttons), disable_web_page_preview=False)
+    except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+        pic = imdb_info.get('poster')
+        poster = pic.replace('.jpg', "._V1_UX360.jpg")
+        await query.message.reply_photo(photo=poster, caption=caption, reply_markup=InlineKeyboardMarkup(buttons))
+    except Exception as e:
+        logger.exception(e)
+        await query.message.reply(caption, reply_markup=InlineKeyboardMarkup(buttons), disable_web_page_preview=False)
+    await query.message.delete()
     await query.answer()
+
+        
