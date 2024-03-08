@@ -152,7 +152,7 @@ async def imdb_search(client, message):
 @Client.on_callback_query(filters.regex('^imdb'))
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, movie = query.data.split('#')
-    imdb = await get_poster(query=movie, id=True)
+    imdb = await get_poster(text=movie, id=True)
     btn = [
         [
             InlineKeyboardButton(
@@ -164,7 +164,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
     message = query.message.reply_to_message or query.message
     if imdb:
         caption = IMDB_TEMPLATE.format(
-            query=imdb['title'],
+            text=imdb['title'],
             title=imdb['title'],
             votes=imdb['votes'],
             aka=imdb["aka"],
