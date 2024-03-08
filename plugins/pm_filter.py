@@ -2,7 +2,7 @@ import asyncio
 import logging
 import re
 import ast 
-from math import math
+import math
 
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
