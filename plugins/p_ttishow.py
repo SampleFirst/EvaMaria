@@ -4,7 +4,7 @@ from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInv
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.users_chats_db import db
 from database.ia_filterdb import Media
-from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS
+from info import ADMINS, LOG_CHANNEL, GROUP_LOGS, SUPPORT_CHAT, MELCOW_NEW_USERS
 from utils import get_size, temp, get_settings
 from Script import script
 
@@ -42,6 +42,23 @@ async def save_group(bot, message):
             text=f"<b>Thank you for adding me to {message.chat.title}\n\nIf you have any questions or doubts about using me, contact support.</b>",
             reply_markup=reply_markup
         )
+        if VERIFY_CHATS:
+            chat_id = message.chat.id
+            chat_title = message.chat.title
+            buttons = [
+                [
+                    InlineKeyboardButton('☑️ Verified Chat', callback_data=f"verify_group:{chat_title}:{chat_id}")
+                ],
+                [
+                    InlineKeyboardButton('⚠️ Ban Chat', callback_data=f"ban_group:{chat_title}:{chat_id}")
+                ],
+                [
+                    InlineKeyboardButton('🚮 Close', callback_data="close_data")
+                ]
+            ]
+            markup=InlineKeyboardMarkup(buttons)
+            await bot.send_message(GROUP_LOGS, text=f"Hey Admin!\nI am added forcefully to this group named **{chat_title}** Please tell me if you like to restrict this group...", reply_markup=markup)
+
     else:
         settings = await get_settings(message.chat.id)
         if settings["welcome"]:
