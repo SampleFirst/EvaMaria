@@ -32,6 +32,7 @@ START_CHAR = ('\'', '"', SMART_OPEN)
 class temp(object):
     BANNED_USERS = []
     BANNED_CHATS = []
+    VERIFIED_CHATS = []
     ME = None
     CURRENT=int(os.environ.get("SKIP", 2))
     CANCEL = False
