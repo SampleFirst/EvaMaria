@@ -28,20 +28,21 @@ SPELL_CHECK = {}
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def give_filter(client, message):
-    if VERIFY_CHATS:
-        chat = message.chat.id
-        chat_id = await db.get_chat(int(chat))
-        if chat_id['is_verified']:
+    try:
+        if VERIFY_CHATS:
+            chat_id = await db.get_chat(int(message.chat.id))
+            if chat_id and chat_id.get('is_verified', False):
+                k = await manual_filters(client, message)
+                if not k:
+                    await auto_filter(client, message)
+            else:
+                return
+        else:
             k = await manual_filters(client, message)
             if not k:
                 await auto_filter(client, message)
-        else:
-            return 
-    else:
-        k = await manual_filters(client, message)
-        if not k:
-            await auto_filter(client, message)
-
+    except Exception as e:
+        logger.error(f"An error occurred in give_filter: {e}")
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
