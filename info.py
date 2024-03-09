@@ -49,6 +49,7 @@ AUTO_DELETE = is_enabled((environ.get('AUTO_DELETE', "True")), True)
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', 0))
+GROUP_LOGS = int(environ.get('GROUP_LOGS', 0))
 UPDATE_CHANNEL = environ.get('UPDATE_CHANNEL', 'https://t.me/iPepkornUpdate')
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'https://t.me/iPepkornSupport')
 FILE_FORWARD = environ.get('FILE_FORWARD',"https://t.me/+kHT4lRngr3Q4NTc1")
