@@ -680,6 +680,58 @@ async def cb_handler(client: Client, query: CallbackQuery):
             parse_mode=enums.ParseMode.HTML
         )
 
+    elif query.data.startswith("verify_group"):
+        _, chat_title, chat_id = query.data.split(":")
+        await client.send_message(chat_id, text="Hello users!\nFrom now on, I will provide you contents 24X7 💘")
+        await db.verify_chat(int(chat_id))
+        temp.VERIFIED_CHATS.append(int(chat_id))
+        btn = [
+            [
+                InlineKeyboardButton("⛔ Ban Chat", callback_data=f"ban_group:{chat_title}:{chat_id}")
+            ],
+            [
+                InlineKeyboardButton("❌ Close", callback_data="close_data")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(btn)
+        ms = await query.edit_message_text(f"**🍁 Chat successfully verified 🧡**\n\n**Chat ID**: {chat_id}\n**Chat Title**: {chat_title}", reply_markup=reply_markup)
+    
+    elif query.data.startswith("ban_group"):
+        _, chat_title, chat_id = query.data.split(":")
+        await client.send_message(chat_id, text="Oops! Sorry, Let's Take a break\nThis is my last and Good Bye message to you all. \n\nContact my admin for more info")
+        await db.disable_chat(int(chat_id))
+        temp.BANNED_CHATS.append(int(chat_id))
+        btn = [
+            [
+                InlineKeyboardButton("☑️ Enable Chat", callback_data=f"enable_group:{chat_title}:{chat_id}")
+            ],
+            [
+                InlineKeyboardButton("❌ Close", callback_data="close_data")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(btn)
+        ms = await query.edit_message_text(f"**Chat successfully disabled** ✅\n\n**Chat ID**: {chat_id}\n\n**Chat Title**: {chat_title}", reply_markup=reply_markup)
+    
+    elif query.data.startswith("enable_group"):
+        _, chat_title, chat_id = query.data.split(":")
+        user = await db.get_chat(int(chat_id))
+        if not user:
+            return await query.answer("Chat Not Found In DB!", show_alert=True)
+        if not user.get('is_disabled'):
+            return await query.answer('This chat is not yet disabled.', show_alert=True)
+        await db.re_enable_chat(int(chat_id))
+        temp.BANNED_CHATS.remove(int(chat_id))
+        btn = [
+            [
+                InlineKeyboardButton("⛔ Ban Again", callback_data=f"ban_group:{chat_title}:{chat_id}")
+            ],
+            [
+                InlineKeyboardButton("❌ Close", callback_data="close_data")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(btn)
+        ms = await query.edit_message_text(f"**Chat successfully Enabled** 💞\n\n**Chat ID**: {chat_id}\n\n**Chat Title**: {chat_title}", reply_markup=reply_markup)
+    
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))
