@@ -26,23 +26,12 @@ VERIFY_CHATS = False
 BUTTONS = {}
 SPELL_CHECK = {}
 
-@Client.on_message(filters.private & filters.text & filters.incoming)
+@Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
-    try:
-        if VERIFY_CHATS:
-            chat_id = await db.get_chat(int(message.chat.id))
-            if chat_id and chat_id.get('is_verified', False):
-                k = await manual_filters(client, message)
-                if not k:
-                    await auto_filter(client, message)
-            else:
-                return
-        else:
-            k = await manual_filters(client, message)
-            if not k:
-                await auto_filter(client, message)
-    except Exception as e:
-        logger.error(f"An error occurred in give_filter: {e}")
+    k = await manual_filters(client, message)
+    if k == False:
+        await auto_filter(client, message)
+
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
