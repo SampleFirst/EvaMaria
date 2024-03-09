@@ -226,34 +226,34 @@ async def unban_user(bot, message):
 
 @Client.on_message(filters.command('users') & filters.user(ADMINS))
 async def list_users(bot, message):
-    reply_msg = await message.reply('Getting list of users...')
+    msg = await message.reply('Getting List Of Users')
     users = await db.get_all_users()
-    out = "Users saved in the database are:\n\n"
+    out = "Users Saved In DB Are:\n\n"
     async for user in users:
-        out += f"**Name:** `{user['name']}`\n**ID:** `{user['id']}`"
+        out += f"<a href=tg://user?id={user['id']}>{user['name']}</a>"
         if user['ban_status']['is_banned']:
-            out += ' (Banned User)'
+            out += '( Banned User )'
         out += '\n'
     try:
-        await reply_msg.edit_text(out)
+        await msg.edit_text(out)
     except MessageTooLong:
         with open('users.txt', 'w+') as outfile:
             outfile.write(out)
-        await message.reply_document('users.txt', caption="List of Users")
+        await message.reply_document('users.txt', caption="List Of Users")
 
 @Client.on_message(filters.command('chats') & filters.user(ADMINS))
 async def list_chats(bot, message):
-    reply_msg = await message.reply('Getting list of chats...')
+    msg = await message.reply('Getting List Of chats')
     chats = await db.get_all_chats()
-    out = "Chats saved in the database are:\n\n"  
+    out = "Chats Saved In DB Are:\n\n"
     async for chat in chats:
-        out += f"**Title:** `{chat['title']}`\n**ID:** `{chat['id']}`"
+        out += f"**Title:** `{chat['title']}`\n**- ID:** `{chat['id']}`"
         if chat['chat_status']['is_disabled']:
-            out += ' (Disabled Chat)'
-        out += '\n'    
+            out += '( Disabled Chat )'
+        out += '\n'
     try:
-        await reply_msg.edit_text(out)
+        await msg.edit_text(out)
     except MessageTooLong:
         with open('chats.txt', 'w+') as outfile:
             outfile.write(out)
-        await message.reply_document('chats.txt', caption="List of Chats")
+        await message.reply_document('chats.txt', caption="List Of Chats")
