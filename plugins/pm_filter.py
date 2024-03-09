@@ -11,7 +11,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, make_inactive
 from database.filters_mdb import del_all, find_filter, get_filters
-from database.ia_filterdb import Media, get_file_details, get_search_results
+from database.ia_filterdb import Media, get_file_details, get_search_results, db as clientDB
 from database.users_chats_db import db
 
 from info import ADMINS, UPDATE_CHANNEL, AUTH_CHANNEL, AUTH_GROUPS, CUSTOM_FILE_CAPTION, IMDB, IMDB_TEMPLATE, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY
