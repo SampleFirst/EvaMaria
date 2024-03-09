@@ -21,15 +21,26 @@ from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
+VERIFY_CHATS = True 
+
 BUTTONS = {}
 SPELL_CHECK = {}
 
-@Client.on_message(filters.group & filters.text & filters.incoming)
+@Client.on_message(filters.private & filters.text & filters.incoming)
 async def give_filter(client, message):
-    k = await manual_filters(client, message)
-    if not k:
-        await auto_filter(client, message)
-
+    if VERIFY_CHATS:
+        chat = message.chat.id
+        chat_id = await db.get_chat(int(chat))
+        if chat_id['is_verified']:
+            k = await manual_filters(client, message)
+            if k == False:
+                await auto_filter(client, message)
+        else:
+            return 
+    else:
+        k = await manual_filters(client, message)
+        if k == False:
+            await auto_filter(client, message)
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
