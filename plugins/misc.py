@@ -153,7 +153,7 @@ async def imdb_search(client, message):
 async def imdb_callback(bot: Client, query_data: CallbackQuery):
     i, movie = query_data.data.split('#')
     imdb = await get_poster(query=movie, id=True)
-    btn = [
+    buttons = [
             [
                 InlineKeyboardButton(
                     text=f"{imdb.get('title')}",
@@ -198,7 +198,7 @@ async def imdb_callback(bot: Client, query_data: CallbackQuery):
         caption = "No results"
     try:
         if imdb_info.get('poster'):
-            await query_data_data.message.reply_photo(photo=imdb_info['poster'], caption=caption, reply_markup=InlineKeyboardMarkup(buttons))
+            await query_data.message.reply_photo(photo=imdb_info['poster'], caption=caption, reply_markup=InlineKeyboardMarkup(buttons))
         else:
             await query_data.message.edit(caption, reply_markup=InlineKeyboardMarkup(buttons), disable_web_page_preview=False)
     except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
