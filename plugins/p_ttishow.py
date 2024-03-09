@@ -8,6 +8,7 @@ from info import ADMINS, LOG_CHANNEL, GROUP_LOGS, SUPPORT_CHAT, UPDATE_CHANNEL, 
 from utils import get_size, temp, get_settings
 from Script import script
 
+VERIFY_CHATS = True 
 
 @Client.on_message(filters.new_chat_members & filters.group)
 async def save_group(bot, message):
