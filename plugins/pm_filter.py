@@ -21,7 +21,7 @@ from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
-VERIFY_CHATS = True 
+VERIFY_CHATS = False 
 
 BUTTONS = {}
 SPELL_CHECK = {}
