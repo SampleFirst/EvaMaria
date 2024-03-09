@@ -4,7 +4,7 @@ from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInv
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.users_chats_db import db
 from database.ia_filterdb import Media
-from info import ADMINS, LOG_CHANNEL, GROUP_LOGS, SUPPORT_CHAT, MELCOW_NEW_USERS
+from info import ADMINS, LOG_CHANNEL, GROUP_LOGS, SUPPORT_CHAT, UPDATE_CHANNEL, MELCOW_NEW_USERS
 from utils import get_size, temp, get_settings
 from Script import script
 
