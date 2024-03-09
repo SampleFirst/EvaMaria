@@ -197,12 +197,12 @@ async def imdb_callback(bot: Client, query_data: CallbackQuery):
     else:
         caption = "No results"
     try:
-        if imdb_info.get('poster'):
+        if imdb.get('poster'):
             await query_data.message.reply_photo(photo=imdb_info['poster'], caption=caption, reply_markup=InlineKeyboardMarkup(buttons))
         else:
             await query_data.message.edit(caption, reply_markup=InlineKeyboardMarkup(buttons), disable_web_page_preview=False)
     except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-        pic = imdb_info.get('poster')
+        pic = imdb.get('poster')
         poster = pic.replace('.jpg', "._V1_UX360.jpg")
         await query_data.message.reply_photo(photo=poster, caption=caption, reply_markup=InlineKeyboardMarkup(buttons))
     except Exception as e:
