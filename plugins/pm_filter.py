@@ -33,14 +33,15 @@ async def give_filter(client, message):
         chat_id = await db.get_chat(int(chat))
         if chat_id['is_verified']:
             k = await manual_filters(client, message)
-            if k == False:
+            if not k:
                 await auto_filter(client, message)
         else:
             return 
     else:
         k = await manual_filters(client, message)
-        if k == False:
+        if not k:
             await auto_filter(client, message)
+
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
