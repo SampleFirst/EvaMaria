@@ -12,8 +12,8 @@ class Database:
 
     def new_user(self, id, name):
         return dict(
-            id = id,
-            name = name,
+            id=id,
+            name=name,
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",
@@ -23,10 +23,11 @@ class Database:
 
     def new_group(self, id, title):
         return dict(
-            id = id,
-            title = title,
+            id=id,
+            title=title,
             chat_status=dict(
                 is_disabled=False,
+                is_verified=False,
                 reason="",
             ),
         )
@@ -36,7 +37,7 @@ class Database:
         await self.col.insert_one(user)
     
     async def is_user_exist(self, id):
-        user = await self.col.find_one({'id':int(id)})
+        user = await self.col.find_one({'id': int(id)})
         return bool(user)
     
     async def total_users_count(self):
@@ -62,7 +63,7 @@ class Database:
             is_banned=False,
             ban_reason=''
         )
-        user = await self.col.find_one({'id':int(id)})
+        user = await self.col.find_one({'id': int(id)})
         if not user:
             return default
         return user.get('ban_status', default)
@@ -76,25 +77,50 @@ class Database:
     async def get_banned(self):
         users = self.col.find({'ban_status.is_banned': True})
         chats = self.grp.find({'chat_status.is_disabled': True})
+        is_verified = self.grp.find({'chat_status.is_verified': True})
         b_chats = [chat['id'] async for chat in chats]
         b_users = [user['id'] async for user in users]
-        return b_users, b_chats
-    
+        v_chats = [chat['id'] async for chat in is_verified]
+        return b_users, b_chats, v_chats
+
+    async def verify_chat(self, chat):
+        chat_status=dict(
+            is_verified=True,
+        )
+        await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
+  
     async def add_chat(self, chat, title):
         chat = self.new_group(chat, title)
         await self.grp.insert_one(chat)
-    
+      
     async def get_chat(self, chat):
-        chat = await self.grp.find_one({'id':int(chat)})
+        chat = await self.grp.find_one({'id': int(chat)})
         return False if not chat else chat.get('chat_status') 
 
+    async def total_chat_count(self):
+        count = await self.grp.count_documents({})
+        return count
+        
     async def re_enable_chat(self, id):
         chat_status=dict(
             is_disabled=False,
             reason="",
-            )
+        )
         await self.grp.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
+      
+    async def disable_chat(self, chat, reason="No Reason"):
+        chat_status=dict(
+            is_disabled=True,
+            reason=reason,
+        )
+        await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
+   
+    async def get_all_chats(self):
+        return self.grp.find({})
         
+    async def delete_chat(self, id):
+        await self.grp.delete_many({'id': int(id)})
+
     async def update_settings(self, id, settings):
         await self.grp.update_one({'id': int(id)}, {'$set': {'settings': settings}})
         
@@ -109,25 +135,11 @@ class Database:
             'template': IMDB_TEMPLATE,
             'auto_delete': AUTO_DELETE
         }
-        chat = await self.grp.find_one({'id':int(id)})
+        chat = await self.grp.find_one({'id': int(id)})
         if chat:
             return chat.get('settings', default)
         return default
     
-    async def disable_chat(self, chat, reason="No Reason"):
-        chat_status=dict(
-            is_disabled=True,
-            reason=reason,
-            )
-        await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
-    
-    async def total_chat_count(self):
-        count = await self.grp.count_documents({})
-        return count
-    
-    async def get_all_chats(self):
-        return self.grp.find({})
-
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
 
