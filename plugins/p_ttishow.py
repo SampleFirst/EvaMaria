@@ -8,7 +8,6 @@ from info import ADMINS, LOG_CHANNEL, GROUP_LOGS, SUPPORT_CHAT, SUPPORT_CHAT_ID,
 from utils import get_size, temp, get_settings
 from Script import script
 
-VERIFY_CHATS = False  
 
 @Client.on_message(filters.new_chat_members & filters.group)
 async def save_group(bot, message):
@@ -43,23 +42,6 @@ async def save_group(bot, message):
             text=f"<b>Thank you for adding me to {message.chat.title}\n\nIf you have any questions or doubts about using me, contact support.</b>",
             reply_markup=reply_markup
         )
-        if VERIFY_CHATS:
-            chat_id = message.chat.id
-            chat_title = message.chat.title
-            buttons = [
-                [
-                    InlineKeyboardButton('☑️ Verified Chat', callback_data=f"verify_group:{chat_title}:{chat_id}")
-                ],
-                [
-                    InlineKeyboardButton('⚠️ Ban Chat', callback_data=f"ban_group:{chat_title}:{chat_id}")
-                ],
-                [
-                    InlineKeyboardButton('🚮 Close', callback_data="close_data")
-                ]
-            ]
-            markup=InlineKeyboardMarkup(buttons)
-            await bot.send_message(GROUP_LOGS, text=f"Hey Admin!\nI am added forcefully to this group named **{chat_title}** Please tell me if you like to restrict this group...", reply_markup=markup)
-
     else:
         settings = await get_settings(message.chat.id)
         if settings["welcome"]:
@@ -265,7 +247,8 @@ async def list_chats(bot, message):
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"
     async for chat in chats:
-        out += f"**Title:** `{chat['title']}`\n**- ID:** `{chat['id']}`"
+        chat_info = await bot.get_chat(chat['id'])
+        out += f"**Title:** `{chat_info.title}`\n**- ID:** `{chat['id']}`\n**Members:** `{chat_info.members_count}`"
         if chat['chat_status']['is_disabled']:
             out += '( Disabled Chat )'
         out += '\n'
@@ -275,3 +258,4 @@ async def list_chats(bot, message):
         with open('chats.txt', 'w+') as outfile:
             outfile.write(out)
         await message.reply_document('chats.txt', caption="List Of Chats")
+        
