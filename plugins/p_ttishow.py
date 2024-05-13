@@ -253,7 +253,7 @@ async def list_chats(bot, message):
             if chat['chat_status']['is_disabled']:
                 out += '( Disabled Chat )'
             out += '\n'
-        except pyrogram.errors.exceptions.bad_request_400.ChatIdInvalid:
+        except ChatIdInvalid:
             out += f"**- ID:** `{chat['id']}` - This chat is invalid or inaccessible\n"
             continue
     try:
