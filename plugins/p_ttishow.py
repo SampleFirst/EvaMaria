@@ -247,11 +247,15 @@ async def list_chats(bot, message):
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"
     async for chat in chats:
-        chat_info = await bot.get_chat(chat['id'])
-        out += f"**Title:** `{chat_info.title}`\n**- ID:** `{chat['id']}`\n**Members:** `{chat_info.members_count}`"
-        if chat['chat_status']['is_disabled']:
-            out += '( Disabled Chat )'
-        out += '\n'
+        try:
+            chat_info = await bot.get_chat(chat['id'])
+            out += f"**Title:** `{chat_info.title}`\n**- ID:** `{chat['id']}`\n**Members:** `{chat_info.members_count}`"
+            if chat['chat_status']['is_disabled']:
+                out += '( Disabled Chat )'
+            out += '\n'
+        except pyrogram.errors.exceptions.bad_request_400.ChatIdInvalid:
+            out += f"**- ID:** `{chat['id']}` - This chat is invalid or inaccessible\n"
+            continue
     try:
         await msg.edit_text(out)
     except MessageTooLong:
