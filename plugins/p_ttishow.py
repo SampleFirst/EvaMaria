@@ -1,6 +1,6 @@
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired
-from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
+from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid, ChatIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.users_chats_db import db
 from database.ia_filterdb import Media
